@@ -30,12 +30,12 @@ jobs:
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
-          cross build --release --target mips-unknown-linux-gnu -Z build-std=std,panic_abort,proc_macro
+          cross build --release --target ${{ matrix.platform.target }} -Z build-std=std,panic_abort,proc_macro
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: rust-app-arm
-          path: target/mips-unknown-linux-gnu/release/lx-music-song-scraper
+          path: target/${{ matrix.platform.target }}/release/lx-music-song-scraper
 on:
   push:
     branches:
