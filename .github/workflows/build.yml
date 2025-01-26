@@ -7,19 +7,19 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly
-          target: mipsel-unknown-linux-musl
+          target: mips64el-unknown-linux-gnuabi64
           override: true
 #      - name: Set up Docker
 #        uses: docker/setup-docker-action@v4
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
-          cargo build --release --target mipsel-unknown-linux-musl
+          cargo build --release --target mips64el-unknown-linux-gnuabi64
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: rust-app-arm
-          path: target/mipsel-unknown-linux-musl/release/lx-music-song-scraper
+          path: target/mips64el-unknown-linux-gnuabi64/release/lx-music-song-scraper
 on:
   push:
     branches:
