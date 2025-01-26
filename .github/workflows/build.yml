@@ -2,7 +2,7 @@ jobs:
   rust-build-arm:
     runs-on: ubuntu-22.04-arm
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
