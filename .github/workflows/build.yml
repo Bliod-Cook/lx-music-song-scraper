@@ -13,12 +13,12 @@ jobs:
       - name: Build
         run: |
           rustup target add arm-unknown-linux-gnueabi
-          cargo build --release --target arm-unknown-linux-gnueabi
+          cross build --release --target arm-unknown-linux-gnueabi
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: rust-app-arm
-          path: target/aarch64-unknown-linux-musl/release/lx-music-song-scraper
+          path: target/arm-unknown-linux-gnueabi/release/lx-music-song-scraper
 on:
   push:
     branches:
