@@ -1,0 +1,22 @@
+jobs:
+  rust-build-arm:
+    runs-on: ubuntu-20.04-arm
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+          override: true
+      - name: Build
+        run: cargo build --release --target aarch64-unknown-linux-gnu
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: rust-app-arm
+          path: target/aarch64-unknown-linux-gnu/release/*
+on:
+  push:
+    branches:
+      - main
