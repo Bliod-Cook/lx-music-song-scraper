@@ -8,12 +8,12 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - name: Set up Docker
-        uses: docker/setup-docker-action@v4
+#      - name: Set up Docker
+#        uses: docker/setup-docker-action@v4
       - name: Build
         run: |
           rustup target add armv7-unknown-linux-gnueabihf
-          cross build --release --target armv7-unknown-linux-gnueabihf
+          cargo build --release --target armv7-unknown-linux-gnueabihf
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
