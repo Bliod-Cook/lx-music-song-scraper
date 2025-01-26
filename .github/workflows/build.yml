@@ -12,7 +12,7 @@ jobs:
 #        uses: docker/setup-docker-action@v4
       - name: Build
         run: |
-          cross build --release
+          cargo build --release
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
