@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
-          cross build --release --target mips-unknown-linux-gnu
+          cross build --release --target mips-unknown-linux-gnu -Z build-std=std,panic_abort,proc_macro
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
