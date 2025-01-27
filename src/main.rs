@@ -1,6 +1,7 @@
 use std::fs::{exists, write};
 use std::sync::Arc;
 use anyhow::Result;
+use tokio_cron_scheduler::{Job, JobScheduler};
 use crate::config::Config;
 use crate::tx::{Song, TXPlayList};
 
@@ -9,6 +10,37 @@ mod tx;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let mut sched = JobScheduler::new().await?;
+
+    sched.add(
+        Job::new_async("every 5 minutes", |_uuid, _locked| {
+            Box::pin(
+                async move {
+                    println!("start");
+                    match run().await {
+                        Ok(()) => (),
+                        Err(error) => println!("Error: {error}"),
+                    }
+                }
+            )
+        })?
+    ).await?;
+
+    sched.shutdown_on_ctrl_c();
+
+    sched.start().await?;
+
+    match run().await {
+        Ok(()) => (),
+        Err(error) => println!("Error: {error}"),
+    }
+
+    loop {
+        tokio::time::sleep(sched.time_till_next_job().await?.unwrap()).await
+    }
+}
+
+async fn run() -> Result<()> {
     let config = Config::get();
     let play_list = TXPlayList::new(config.play_id).await?;
 
@@ -22,12 +54,12 @@ async fn main() -> Result<()> {
         }
     }
 
+    println!("{need_to_download:#?}");
+
     let mut set: tokio::task::JoinSet<Result<(String,String)>> = tokio::task::JoinSet::new();
 
     let lx_api_url = Arc::new(config.lx_api_url.clone());
 
-    println!("{need_to_download:#?}");
-    
     for i in need_to_download {
         let copy = lx_api_url.clone();
         let copy2 = config.lx_api_key.clone();
