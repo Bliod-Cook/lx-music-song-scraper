@@ -88,9 +88,10 @@ async fn run() -> Result<()> {
             let data = client.get(url).send().await?.bytes().await?;
 
             write(format!("{}/{}.mp3", dir, i.name.replace(" ", "_")), data)?;
-            
+
             Ok(())
         });
+        tokio::time::sleep(std::time::Duration::from_secs(4)).await;
     }
 
     Ok(())
