@@ -30,6 +30,12 @@ jobs:
           cargo install cross
 #      - name: Set up Docker
 #        uses: docker/setup-docker-action@v4
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .
+          cache-all-crates: true
+          cache-on-failure: true
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
@@ -69,6 +75,12 @@ jobs:
             cargo install cross
       #      - name: Set up Docker
       #        uses: docker/setup-docker-action@v4
+        - name: Rust Cache
+          uses: Swatinem/rust-cache@v2
+          with:
+            workspaces: .
+            cache-all-crates: true
+            cache-on-failure: true
         - name: Build
           run: |
             cross build --release --target ${{ matrix.platform.target }}
