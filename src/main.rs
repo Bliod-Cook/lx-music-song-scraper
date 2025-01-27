@@ -26,12 +26,14 @@ async fn main() -> Result<()> {
 
     let lx_api_url = Arc::new(config.lx_api_url.clone());
 
+    println!("{need_to_download:#?}");
+    
     for i in need_to_download {
-        println!("{i:?}");
         let copy = lx_api_url.clone();
         let copy2 = config.lx_api_key.clone();
         set.spawn(async move {
             let client = reqwest::ClientBuilder::new()
+                .danger_accept_invalid_certs(true)
                 .build()?;
             let data = client.get(
                 format!("{}/url/tx/{}/320k", copy, i.id)
