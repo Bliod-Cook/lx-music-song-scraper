@@ -1,4 +1,5 @@
 use std::fs::{exists, write};
+use std::process::exit;
 use std::sync::Arc;
 use anyhow::Result;
 use tokio_cron_scheduler::{Job, JobScheduler};
@@ -34,9 +35,15 @@ async fn main() -> Result<()> {
         Ok(()) => (),
         Err(error) => println!("Error: {error}"),
     }
+    
+    ctrlc::set_handler(|| {
+        exit(1)
+    })?;
 
     loop {
-        tokio::time::sleep(sched.time_till_next_job().await?.unwrap()).await
+        if let Some(time) = sched.time_till_next_job().await? {
+            tokio::time::sleep(time).await
+        }
     }
 }
 
