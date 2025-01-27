@@ -29,7 +29,7 @@ impl Config {
             println!("{e}");
             exit(0)
         });
-        return Config {
+        Config {
             dir: args.dir,
             play_id: args.play_id,
             lx_api_url,

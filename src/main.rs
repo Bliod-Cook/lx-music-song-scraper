@@ -63,13 +63,14 @@ async fn run() -> Result<()> {
 
     println!("{need_to_download:#?}");
 
-    let mut set: tokio::task::JoinSet<Result<(String,String)>> = tokio::task::JoinSet::new();
+    let mut set: tokio::task::JoinSet<Result<()>> = tokio::task::JoinSet::new();
 
     let lx_api_url = Arc::new(config.lx_api_url.clone());
 
     for i in need_to_download {
         let copy = lx_api_url.clone();
         let copy2 = config.lx_api_key.clone();
+        let dir = config.dir.clone();
         set.spawn(async move {
             let client = reqwest::ClientBuilder::new()
                 .danger_accept_invalid_certs(true)
@@ -84,19 +85,12 @@ async fn run() -> Result<()> {
 
             let url = json["url"].as_str().unwrap().to_string();
 
-            Ok(
-                (url, i.name)
-            )
+            let data = client.get(url).send().await?.bytes().await?;
+
+            write(format!("{}/{}.mp3", dir, i.name.replace(" ", "_")), data)?;
+            
+            Ok(())
         });
-    }
-
-    let client = reqwest::ClientBuilder::new().build()?;
-    while let Some(result) = set.join_next().await {
-        let (url, name) = result??;
-
-        let data = client.get(url).send().await?.bytes().await?;
-
-        write(format!("{}/{}.mp3", config.dir, name.replace(" ", "_")), data)?
     }
 
     Ok(())
