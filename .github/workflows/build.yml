@@ -1,3 +1,6 @@
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   rust-build-mipsel:
     strategy:
@@ -13,8 +16,6 @@ jobs:
           - target: mipsel-unknown-linux-musl
             toolchain: nightly
           - target: mips64-unknown-linux-gnuabi64
-            toolchain: nightly
-          - target: mips64-unknown-linux-muslabi64
             toolchain: nightly
 
     runs-on: ubuntu-latest
@@ -45,6 +46,8 @@ jobs:
       matrix:
         platform:
           - target: aarch64-unknown-linux-gnu
+            toolchain: stable
+          - target: aarch64-unknown-linux-musl
             toolchain: stable
           - target: arm-unknown-linux-gnueabi
             toolchain: stable
