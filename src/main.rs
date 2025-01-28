@@ -98,8 +98,10 @@ async fn run() -> Result<()> {
     progress_bar.set_style(
         indicatif::ProgressStyle::default_bar()
             .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta}) {msg}")?
-            .progress_chars("#>-")
+            .progress_chars("█▇▆▅▄▃▂▁  ")
     );
+
+    progress_bar.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let mut set: tokio::task::JoinSet<Result<()>> = tokio::task::JoinSet::new();
 
@@ -127,7 +129,7 @@ async fn run() -> Result<()> {
             let data = client.get(url).send().await?.bytes().await?;
 
             pb.set_message(sanitise_file_name::sanitise(&i.name));
-            
+
             write(format!("{}/{}.mp3", dir, sanitise_file_name::sanitise(&i.name)), data)?;
 
             pb.inc(1);
@@ -136,6 +138,10 @@ async fn run() -> Result<()> {
         });
         tokio::time::sleep(std::time::Duration::from_secs(4)).await;
     }
+    
+    set.join_all().await;
+    
+    println!("finished");
 
     Ok(())
 }
