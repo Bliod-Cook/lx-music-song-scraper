@@ -29,7 +29,10 @@ impl TXPlayList {
         for song in cd_list.iter() {
             let name = song["name"].as_str().unwrap().to_string();
             let song_id = song["mid"].as_str().unwrap().to_string();
-            song_list.push(Song::new(name, song_id));
+            song_list.push(Song::new(
+                name,
+                song_id
+            ));
         }
         Ok(TXPlayList {
             _id: id,
