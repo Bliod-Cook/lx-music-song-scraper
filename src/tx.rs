@@ -1,14 +1,10 @@
 use anyhow::Result;
+use base64::Engine;
+use crate::song::Song;
 
 pub struct TXPlayList {
     _id: i64,
     pub song_list: Vec<Song>
-}
-
-#[derive(Debug)]
-pub struct Song {
-    pub name: String,
-    pub id: String,
 }
 
 impl TXPlayList {
@@ -53,11 +49,25 @@ impl TXPlayList {
     }
 }
 
-impl Song {
-    pub fn new(name: String, id: String) -> Song {
-        Song {
-            name,
-            id,
-        }
+pub trait TXLyric {
+    async fn get_lyric(&self, client: reqwest::Client) -> Result<String>;
+}
+
+impl TXLyric for Song {
+    async fn get_lyric(&self, client: reqwest::Client) -> Result<String> {
+        let resp = client.get(
+            format!("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&platform=yqq", self.id)
+        )
+            .header(
+                "Referer",
+                "https://y.qq.com/portal/player.html"
+            )
+            .send()
+            .await?;
+        let json = serde_json::from_str::<serde_json::Value>(&resp.text().await?)?;
+        let base64_lyric = json["lyric"].as_str().unwrap().to_string();
+        let lyric = String::from_utf8(base64::prelude::BASE64_STANDARD.decode(base64_lyric.as_bytes())?)?;
+
+        Ok(lyric)
     }
 }

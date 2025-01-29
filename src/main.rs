@@ -2,12 +2,15 @@ use std::fs::{exists, write};
 use std::process::exit;
 use std::sync::{Arc};
 use anyhow::Result;
+use id3::TagLike;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use crate::config::Config;
-use crate::tx::{Song, TXPlayList};
+use crate::song::Song;
+use crate::tx::{TXLyric, TXPlayList};
 
 mod config;
 mod tx;
+mod song;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -126,9 +129,22 @@ async fn run() -> Result<()> {
 
             let url = json["url"].as_str().unwrap().to_string();
 
-            let data = client.get(url).send().await?.bytes().await?;
+            let mut data = client.get(url).send().await?.bytes().await?.to_vec();
 
             pb.set_message(sanitise_file_name::sanitise(&i.name));
+
+            let mut tag = id3::Tag::async_read_from(&mut std::io::Cursor::new(&data[..])).await?;
+
+            let lyrics = i.get_lyric(client).await?;
+
+            tag.remove_all_lyrics();
+            tag.add_frame(id3::frame::Lyrics {
+                lang: "unknown".to_string(),
+                description: "lyrics".to_string(),
+                text: lyrics,
+            });
+
+            tag.write_to(&mut std::io::Cursor::new(&mut data[..]), id3::Version::Id3v24)?;
 
             write(format!("{}/{}.mp3", dir, sanitise_file_name::sanitise(&i.name)), data)?;
 
@@ -136,7 +152,7 @@ async fn run() -> Result<()> {
 
             Ok(())
         });
-        tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+        tokio::time::sleep(std::time::Duration::from_secs(2)).await;
     }
     
     set.join_all().await;
