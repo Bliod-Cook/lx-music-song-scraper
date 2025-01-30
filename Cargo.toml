@@ -24,4 +24,4 @@ openssl = { version = "0.10", features = ["vendored"] }
 [profile.release]
 codegen-units = 1
 lto = true
-opt-level = "z"
+opt-level = 3
