@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
-          cross build --release --target ${{ matrix.platform.target }} -Z build-std=std,panic_abort,proc_macro
+          cross build --release --target ${{ matrix.platform.target }} -Z build-std=std,panic_abort,proc_macro,core
 #          upx target/${{ matrix.platform.target }}/release/lx-music-song-scraper
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -83,7 +83,7 @@ jobs:
             cache-on-failure: true
         - name: Build
           run: |
-            cross build --target ${{ matrix.platform.target }} --release -Z build-std=std,panic_abort,proc_macro
+            cross build --target ${{ matrix.platform.target }} --release
     #          upx target/${{ matrix.platform.target }}/release/lx-music-song-scraper
         - name: Upload Artifact
           uses: actions/upload-artifact@v4
