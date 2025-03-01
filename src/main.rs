@@ -96,7 +96,7 @@ async fn run() -> Result<()> {
         }
     }
 
-    println!("{need_to_download}");
+    println!("{need_to_download:#?}");
 
     // Init ProgressBar
     let progress_bar = Arc::new(indicatif::ProgressBar::new(need_to_download.len() as u64));
