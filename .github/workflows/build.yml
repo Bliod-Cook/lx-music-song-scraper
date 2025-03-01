@@ -36,6 +36,7 @@ jobs:
           workspaces: .
           cache-all-crates: true
           cache-on-failure: true
+          key: ${{ matrix.platform.toolchain }}
       - name: Build
         run: |
           apt-get update -y && apt-get install -y upx;
@@ -81,6 +82,7 @@ jobs:
             workspaces: .
             cache-all-crates: true
             cache-on-failure: true
+            key: ${{ matrix.platform.toolchain }}
         - name: Build
           run: |
             cross build --target ${{ matrix.platform.target }} --release
