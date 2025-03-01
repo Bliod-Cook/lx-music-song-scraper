@@ -83,7 +83,7 @@ jobs:
             cache-on-failure: true
         - name: Build
           run: |
-            cross build --target ${{ matrix.platform.target }} --release
+            cross build --target ${{ matrix.platform.target }} --release -Z build-std=std,panic_abort,proc_macro
     #          upx target/${{ matrix.platform.target }}/release/lx-music-song-scraper
         - name: Upload Artifact
           uses: actions/upload-artifact@v4
