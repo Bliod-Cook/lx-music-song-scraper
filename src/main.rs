@@ -1,4 +1,5 @@
-use std::fs::{exists, write};
+use std::fs::{exists, read_to_string, write};
+use std::path::Path;
 use std::process::exit;
 use std::sync::{Arc};
 use anyhow::Result;
@@ -87,11 +88,27 @@ async fn run() -> Result<()> {
     let play_list = TXPlayList::new(config.play_id).await?;
 
     let mut need_to_download: Vec<Song> = vec![];
+    
+    // Read the ignore file if it exists
+    let ignore_path = Path::new(".ignore");
+    let ignored_songs: Vec<String> = if ignore_path.exists() {
+        let content = read_to_string(ignore_path)?;
+        content.lines().map(|line| line.trim().to_string()).collect()
+    } else {
+        Vec::new()
+    };
 
     for i in play_list.song_list {
-        if exists(format!("{}/{}.mp3",config.dir, sanitise_file_name::sanitise(&i.name)))? {
-            continue
-        } else {
+        // Check if the song exists in the filesystem
+        if exists(format!("{}/{}.mp3", config.dir, sanitise_file_name::sanitise(&i.name)))? {
+            continue;
+        } 
+        // Check if the song is in the ignore list
+        else if ignored_songs.contains(&i.name) {
+            println!("Skipping ignored song: {}", i.name);
+            continue;
+        } 
+        else {
             need_to_download.push(i);
         }
     }
