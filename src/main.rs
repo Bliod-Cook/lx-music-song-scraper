@@ -142,11 +142,12 @@ async fn run() -> Result<()> {
                 format!("{}/tx/{}/320k", copy, i.id)
             )
                 .header("X-Request-Key", copy2)
+                .header("User-Agent", "lx-music-request/2.10.0")
                 .send()
                 .await?;
             let json = serde_json::from_str::<serde_json::Value>(&data.text().await?)?;
 
-            let url = json["url"].as_str().unwrap().to_string();
+            let url = json["data"].as_str().unwrap().to_string();
 
             let mut data = client.get(url).send().await?.bytes().await?.to_vec();
 
