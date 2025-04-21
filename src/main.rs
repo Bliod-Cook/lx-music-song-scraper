@@ -139,7 +139,7 @@ async fn run() -> Result<()> {
                 .danger_accept_invalid_certs(true)
                 .build()?;
             let data = client.get(
-                format!("{}/url/tx/{}/320k", copy, i.id)
+                format!("{}/tx/{}/320k", copy, i.id)
             )
                 .header("X-Request-Key", copy2)
                 .send()
