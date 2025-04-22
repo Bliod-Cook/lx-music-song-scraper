@@ -143,9 +143,15 @@ async fn run() -> Result<()> {
             )
                 .header("X-Request-Key", copy2)
                 .header("User-Agent", "lx-music-request/2.10.0")
+                .header("Content-Type", "application/json")
                 .send()
                 .await?;
-            let json = serde_json::from_str::<serde_json::Value>(&data.text().await?)?;
+            
+            let text = data.text().await?;
+            
+            dbg!(&text);
+            
+            let json = serde_json::from_str::<serde_json::Value>(&text)?;
 
             let url = json["data"].as_str().unwrap().to_string();
 
