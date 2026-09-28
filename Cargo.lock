@@ -801,9 +801,9 @@ dependencies = [
 
 [[package]]
 name = "id3"
-version = "1.16.2"
+version = "1.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "472295f55960dd48e38c89442fa5d5423f5cf0ed2c665485be78e129231a39e9"
+checksum = "ef8be496a46468ba3d43690775aa3a79102ce4daf7d99e8072589aae1a3cd955"
 dependencies = [
  "bitflags 2.9.0",
  "byteorder",
